@@ -1,13 +1,12 @@
-
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  User, Mail, Phone, MapPin, Calendar, Camera, Save,
+  User, Mail, Phone, Calendar, Camera, Save,
   Loader2, CheckCircle2, AlertCircle, ArrowLeft,
   ShieldCheck, GraduationCap, BookOpen, Lock, LogOut
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import api from '../api/axios'
+import api, { API_BASE } from '../api/axios'
 
 export default function Profile() {
   const { user, updateUser, logout } = useAuth()
@@ -95,7 +94,13 @@ export default function Profile() {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      updateUser({ avatar: res.data.avatar })
+      // 🆕 Hakikisha URL ni kamili
+      let avatarUrl = res.data.avatar
+      if (avatarUrl && avatarUrl.startsWith('/')) {
+        avatarUrl = `${API_BASE}${avatarUrl}`
+      }
+
+      updateUser({ avatar: avatarUrl })
       setMessage({ type: 'success', text: 'Picha imepakiwa kikamilifu!' })
       setAvatarFile(null)
       setAvatarPreview(null)
@@ -182,7 +187,12 @@ export default function Profile() {
 
   const RoleIcon = roleIcon
 
-  const displayAvatar = avatarPreview || user?.avatar
+  // 🆕 Tumia API_BASE kwa avatar kama ni URL ya jamaa
+  let displayAvatar = avatarPreview || user?.avatar
+  if (displayAvatar && displayAvatar.startsWith('/')) {
+    displayAvatar = `${API_BASE}${displayAvatar}`
+  }
+
   const initials = (user?.first_name?.[0] || user?.username?.[0] || 'U').toUpperCase()
 
   const ROLE_LABEL = {

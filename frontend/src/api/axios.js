@@ -1,7 +1,14 @@
 import axios from 'axios'
 
+// API base URL — inasoma kutoka env
+export const API_URL =
+  import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+
+export const API_BASE =
+  import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -29,7 +36,7 @@ api.interceptors.response.use(
       original._retry = true
       try {
         const res = await axios.post(
-          'http://127.0.0.1:8000/api/auth/token/refresh/',
+          `${API_URL}/auth/token/refresh/`,
           { refresh: localStorage.getItem('refresh_token') }
         )
         localStorage.setItem('access_token', res.data.access)
@@ -38,6 +45,7 @@ api.interceptors.response.use(
       } catch (e) {
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
+        localStorage.removeItem('user')
         window.location.href = '/login'
       }
     }
