@@ -1,7 +1,25 @@
 import axios from 'axios'
 
+// ============ API URLS ============
+// Fallback ni URL ya production (Render) — sio localhost
+const FALLBACK_API_URL = 'https://students-management-system-qw06.onrender.com/api'
+const FALLBACK_API_BASE = 'https://students-management-system-qw06.onrender.com'
+
+// Inasoma kutoka env (Vite)
+export const API_URL =
+  import.meta.env.VITE_API_URL || FALLBACK_API_URL
+
+export const API_BASE =
+  import.meta.env.VITE_API_BASE || FALLBACK_API_BASE
+
+// Debug log (kwa kuchunguza)
+if (import.meta.env.DEV) {
+  console.log('🔵 API_URL:', API_URL)
+  console.log('🔵 API_BASE:', API_BASE)
+}
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -29,7 +47,7 @@ api.interceptors.response.use(
       original._retry = true
       try {
         const res = await axios.post(
-          'http://127.0.0.1:8000/api/auth/token/refresh/',
+          `${API_URL}/auth/token/refresh/`,
           { refresh: localStorage.getItem('refresh_token') }
         )
         localStorage.setItem('access_token', res.data.access)
@@ -38,6 +56,7 @@ api.interceptors.response.use(
       } catch (e) {
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
+        localStorage.removeItem('user')
         window.location.href = '/login'
       }
     }
