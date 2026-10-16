@@ -1,11 +1,22 @@
 import axios from 'axios'
 
-// API base URL — inasoma kutoka env
+// ============ API URLS ============
+// Fallback ni URL ya production (Render) — sio localhost
+const FALLBACK_API_URL = 'https://students-management-system-qw06.onrender.com/api'
+const FALLBACK_API_BASE = 'https://students-management-system-qw06.onrender.com'
+
+// Inasoma kutoka env (Vite)
 export const API_URL =
-  import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+  import.meta.env.VITE_API_URL || FALLBACK_API_URL
 
 export const API_BASE =
-  import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'
+  import.meta.env.VITE_API_BASE || FALLBACK_API_BASE
+
+// Debug log (kwa kuchunguza)
+if (import.meta.env.DEV) {
+  console.log('🔵 API_URL:', API_URL)
+  console.log('🔵 API_BASE:', API_BASE)
+}
 
 const api = axios.create({
   baseURL: API_URL,
